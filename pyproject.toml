@@ -1,0 +1,14 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "Jan Foksinski", email = "jasfoksinski@gmail.com"},
+]
+dependencies = [
+    "pygame>=2.5.0",
+]
+requires-python = ">=3.11"
+readme = "README.md"
+license = {text = "MIT"}
+

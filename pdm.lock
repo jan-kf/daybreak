@@ -6,7 +6,7 @@ groups = ["default"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:01e8064b22ff9e237ac6bc08f29732fe36b3bb9444c5082d9331140505d8976b"
+content_hash = "sha256:d994ece6cea6cdae856402ccdbb332bed67a70a0433155b018eea1ebf92ee9ac"
 
 [[package]]
 name = "altgraph"
@@ -105,6 +105,24 @@ summary = "Community maintained hooks for PyInstaller"
 files = [
     {file = "pyinstaller-hooks-contrib-2023.6.tar.gz", hash = "sha256:596a72009d8692b043e0acbf5e1b476d93149900142ba01845dded91a0770cb5"},
     {file = "pyinstaller_hooks_contrib-2023.6-py2.py3-none-any.whl", hash = "sha256:aa6d7d038814df6aa7bec7bdbebc7cb4c693d3398df858f6062957f0797d397b"},
+]
+
+[[package]]
+name = "pytmx"
+version = "3.32"
+requires_python = ">=3.7"
+summary = "Loads tiled tmx maps"
+files = [
+    {file = "PyTMX-3.32-py3-none-any.whl", hash = "sha256:4da4c01133dfcb2746cb4e7f46ea1aef21d56119ab044f8f77b9906dea5fbccb"},
+    {file = "PyTMX-3.32.tar.gz", hash = "sha256:858fd8338f8e7de0e7967604f008022c26735ab98780b2c5d94d2e2c2f5809ca"},
+]
+
+[[package]]
+name = "pytweening"
+version = "1.0.7"
+summary = "A collection of tweening / easing functions."
+files = [
+    {file = "pytweening-1.0.7.tar.gz", hash = "sha256:767134f1bf57b76c1ce9f692dd1cfc776d9a279de6724e8d04854508fd7ededb"},
 ]
 
 [[package]]

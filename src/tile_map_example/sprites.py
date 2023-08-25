@@ -1,6 +1,7 @@
 import pygame as pg
 from random import uniform, choice, randint, random
 from settings import *
+from base import Entity, Block
 from tilemap import collide_hit_rect
 import pytweening as tween
 from itertools import chain
@@ -26,27 +27,7 @@ def collide_with_walls(sprite, group, dir):
             sprite.vel.y = 0
             sprite.hit_rect.centery = sprite.pos.y
 
-class Entity(pg.sprite.Sprite):
-    scale: int | float = 64
-    base_image: pg.Surface = pg.Surface((0,0))
-    image: pg.Surface = pg.Surface((0,0))
-    pos = None
-    rect:pg.rect.Rect = pg.Rect(0,0,0,0)
-    hit_rect:pg.rect.Rect = pg.Rect(0,0,0,0)
-    
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        
-        
-class Block(pg.sprite.Sprite):
-    scale: int | float = 64
-    
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.x = None
-        self.y = None
-        self.rect:pg.rect.Rect = pg.Rect(0,0,0,0)
-        self.hit_rect:pg.rect.Rect = pg.Rect(0,0,0,0)
+
 
 class Player(Entity):
     def __init__(self, game, x, y):

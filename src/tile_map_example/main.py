@@ -7,7 +7,7 @@ from os import path
 from settings import *
 from sprites import *
 from tilemap import *
-from zoom import Zoom
+from base import Zoom
 
 # HUD functions
 def draw_player_health(surf, x, y, pct):
@@ -31,8 +31,11 @@ class Game:
     def __init__(self):
         pg.mixer.pre_init(44100, -16, 4, 2048)
         pg.init()
-        self.screen = pg.display.set_mode((WIDTH, HEIGHT))
+        # flags = pg.OPENGL | pg.RESIZABLE
+        flags = pg.RESIZABLE
+        self.screen = pg.display.set_mode((WIDTH, HEIGHT), flags )
         self.rect = self.screen.get_rect()
+        print(self.rect, self.screen.get_size())
         self.zoom = Zoom()
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
@@ -120,7 +123,7 @@ class Game:
                          tile_object.width, tile_object.height)
             if tile_object.name in ['health', 'shotgun']:
                 Item(self, obj_center, tile_object.name)
-        self.camera = Camera(self.map.width, self.map.height, self.zoom)
+        self.camera = Camera(self.map.width, self.map.height, self.zoom, self.screen)
         self.draw_debug = True
         self.paused = False
         self.night = False
@@ -194,24 +197,32 @@ class Game:
         for y in range(0, HEIGHT, self.zoom.get_tile_size()):
             pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
-    def render_fog(self):
-        # draw the light mask (gradient) onto fog image
-        self.fog.fill(NIGHT_COLOR)
-        self.light_rect.center = self.camera.apply(self.player).center
-        self.fog.blit(self.light_mask, self.light_rect)
-        self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
+    # def render_fog(self):
+    #     # draw the light mask (gradient) onto fog image
+    #     self.fog.fill(NIGHT_COLOR)
+    #     self.light_rect.center = self.camera.apply(self.player).center
+    #     self.fog.blit(self.light_mask, self.light_rect)
+    #     self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
         
 
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
         
         # self.screen.fill(BGCOLOR)
+        
+        # render the map:
+        # TODO: only update/scale map when something changes (the scale, or the camera movement)
+        self.screen.fill(BLACK)
         self.map_img = self.zoom.scale_image(self.base_map_img)
         self.screen.blit(self.map_img, self.camera.apply(self.map))
+        
+        # render a black background (featureless map, practically no performance hit)
+        # self.screen.fill(BLACK)
+        
         # pg.display.flip()
-        self.draw_grid()
+        # self.draw_grid()
         for sprite in self.all_sprites:
-            self.zoom.update(sprite)
+            self.zoom.update(sprite, self.screen)
             if isinstance(sprite, Mob):
                 sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
@@ -219,8 +230,9 @@ class Game:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1)
         if self.draw_debug:
             for wall in self.walls:
-                self.zoom.update(wall)
+                self.zoom.update(wall, self.screen)
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
+            
 
         # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
         if self.night:
@@ -245,10 +257,12 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.MOUSEBUTTONDOWN:
                 print(event.__dict__)
+                x, y = pg.mouse.get_pos()
+                print(f"Clicked at ({x}, {y})")
                 if event.button == 4:
-                    self.area = self.zoom.zoom_in()
+                    self.area = self.zoom.zoom_in(x,y)
                 elif event.button == 5:
-                    self.area = self.zoom.zoom_out()
+                    self.area = self.zoom.zoom_out(x,y)
                 elif event.button == 1:
                     self.area = self.zoom.reset()
             if event.type == pg.QUIT:

@@ -1,7 +1,9 @@
 import pygame as pg
-from typing import List
+from typing import List, Tuple
 
 vec = pg.math.Vector2
+Coordinate = Tuple[int, int]
+Size = Tuple[int, int]
 
 
 class Zoom:
@@ -132,13 +134,16 @@ class Zoom:
             self.get_new_val_from_scale(h, current_scale, new_scale),
         )
 
-    def get_new_val_from_scale(self, val, start_scale, end_scale):
+    def get_rounded_val_from_scale(self, val, start_scale, end_scale) -> int:
+        return int(self.get_new_val_from_scale(val, start_scale, end_scale) + 0.5)
+
+    def get_new_val_from_scale(self, val, start_scale, end_scale) -> float:
         return (val * end_scale) / start_scale
 
 
 class Shape(pg.sprite.Sprite):
     def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+        # super().__init__(*args, **kwargs)
 
         self.game = kwargs["game"]
         self.zoom: Zoom = kwargs["zoom"]
@@ -161,8 +166,32 @@ class Shape(pg.sprite.Sprite):
 
 
 class Entity(Shape):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.images = []
+        self.positions = []
+
+        self.init_images(kwargs["image"])
+        self.init_positions(vec(kwargs.get("x", 0), kwargs.get("y", 0)))
+
+        self.pos = self.get_pos()
+        self.vel = vec(0, 0)
+        self.acc = vec(0, 0)
+
+        self.image = self.get_image()
+        self.rect = self.image.get_rect()
+        self.hit_rect = self.rect
+        self.rot = 0
+
+        self.rect.center = self.get_pos()
+        self.hit_rect.center = self.rect.center
+
     def get_image(self):
         return self.images[self.zoom.tile_size_index]
+
+    def get_pos(self):
+        return self.positions[self.zoom.tile_size_index]
 
     def init_images(self, image: pg.Surface):
         self.images: List[pg.surface.Surface] = [
@@ -181,19 +210,26 @@ class Entity(Shape):
                 )
                 self.images[i] = pg.transform.scale(image, (w, h))
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def init_positions(self, pos: pg.Vector2):
+        self.positions: List[pg.Vector2] = [vec(0, 0)] * len(self.zoom.tile_sizes)
+        self.positions[self.zoom.base_scale_index] = pos
 
-        self.init_images(kwargs["image"])
-
-        self.pos = vec(kwargs.get("x", 0), kwargs.get("y", 0))
-        self.vel = vec(0, 0)
-        self.acc = vec(0, 0)
-
-        self.image = self.get_image()
-        self.rect = self.image.get_rect()
-        self.hit_rect = self.rect
-        self.rot = 0
+        for i in range(len(self.positions)):
+            if i == self.zoom.base_scale_index:
+                continue
+            else:
+                self.positions[i] = vec(
+                    self.zoom.get_new_val_from_scale(
+                        pos[0],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                    self.zoom.get_new_val_from_scale(
+                        pos[1],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                )
 
     def update(self) -> None:
         # self.pos = self.zoom.get_new_val_from_scale(
@@ -201,18 +237,80 @@ class Entity(Shape):
         # )
         # TODO: self.pos needs to work like self.images :/
         self.image = self.get_image()
+        self.pos = self.get_pos()
         self.rect = self.image.get_rect()
         self.hit_rect = self.rect
+        self.rect.center = tuple(self.pos)
+        self.hit_rect.center = self.rect.center
 
 
 class Block(Shape):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.x = kwargs.get("x", 0)
-        self.y = kwargs.get("y", 0)
-        self.rect: pg.rect.Rect = pg.Rect(
-            self.x, self.y, kwargs.get("w", 0), kwargs.get("h", 0)
-        )
+
+        self.init_positions((kwargs.get("x", 0), kwargs.get("y", 0)))
+        self.init_sizes((kwargs.get("w", 0), kwargs.get("h", 0)))
+
+        self.x, self.y = self.get_pos()
+        self.w, self.h = self.get_size()
+
+        self.rect: pg.rect.Rect = pg.Rect(self.x, self.y, self.w, self.h)
+        self.hit_rect: pg.rect.Rect = self.rect
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+    def get_pos(self):
+        return self.positions[self.zoom.tile_size_index]
+
+    def get_size(self):
+        return self.sizes[self.zoom.tile_size_index]
+
+    def init_positions(self, pos: Coordinate):
+        self.positions: List[Coordinate] = [(0, 0)] * len(self.zoom.tile_sizes)
+        self.positions[self.zoom.base_scale_index] = pos
+
+        for i in range(len(self.positions)):
+            if i == self.zoom.base_scale_index:
+                continue
+            else:
+                self.positions[i] = (
+                    self.zoom.get_rounded_val_from_scale(
+                        pos[0],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                    self.zoom.get_rounded_val_from_scale(
+                        pos[1],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                )
+
+    def init_sizes(self, size: Size):
+        self.sizes: List[Size] = [(0, 0)] * len(self.zoom.tile_sizes)
+        self.sizes[self.zoom.base_scale_index] = size
+
+        for i in range(len(self.sizes)):
+            if i == self.zoom.base_scale_index:
+                continue
+            else:
+                self.sizes[i] = (
+                    self.zoom.get_rounded_val_from_scale(
+                        size[0],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                    self.zoom.get_rounded_val_from_scale(
+                        size[1],
+                        self.zoom.tile_sizes[self.zoom.base_scale_index],
+                        self.zoom.tile_sizes[i],
+                    ),
+                )
+
+    def update(self) -> None:
+        self.x, self.y = self.get_pos()
+        self.w, self.h = self.get_size()
+        self.rect: pg.rect.Rect = pg.Rect(self.x, self.y, self.w, self.h)
         self.hit_rect: pg.rect.Rect = self.rect
         self.rect.x = self.x
         self.rect.y = self.y

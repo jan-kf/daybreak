@@ -79,10 +79,8 @@ class Player(Entity):
         if now - self.last_shot > WEAPONS[self.weapon]["rate"]:
             self.last_shot = now
             dir = vec(1, 0).rotate(-self.rot)
-            pos = (
-                self.pos
-            )  # + (BARREL_OFFSET*self.game.zoom.scale_factor).rotate(-self.rot)
-            print(pos)
+            pos = (self.pos) + (BARREL_OFFSET * self.zoom.sf).rotate(-self.rot)
+
             self.vel = vec(
                 -(self.game.zoom.get_linear_update(WEAPONS[self.weapon]["kickback"])), 0
             ).rotate(-self.rot)
@@ -92,13 +90,17 @@ class Player(Entity):
                 )
                 spread = uniform(-_spread, _spread)
                 Bullet(
-                    self.game, pos, dir.rotate(spread), WEAPONS[self.weapon]["damage"]
+                    self.game,
+                    pos,
+                    dir.rotate(spread),
+                    WEAPONS[self.weapon]["damage"],
+                    self.zoom,
                 )
                 snd = choice(self.game.weapon_sounds[self.weapon])
                 if snd.get_num_channels() > 2:
                     snd.stop()
                 snd.play()
-            MuzzleFlash(self.game, pos)
+            MuzzleFlash(self.game, pos, self.zoom)
 
     def hit(self):
         self.damaged = True
@@ -211,15 +213,22 @@ class Mob(Entity):
 
 
 class Bullet(Entity):
-    def __init__(self, game, pos, dir, damage):
+    def __init__(self, game, pos, dir, damage, zoom):
+        super().__init__(
+            x=pos[0],
+            y=pos[1],
+            image=game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]],
+            zoom=zoom,
+            game=game,
+        )
         self._layer = BULLET_LAYER
         self.groups = game.all_sprites, game.bullets
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.base_image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
-        self.image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
-        self.rect = self.image.get_rect()
-        self.hit_rect = self.rect
+        # self.base_image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
+        # self.image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
+        # self.rect = self.image.get_rect()
+        # self.hit_rect = self.rect
         self.pos = vec(pos)
         self.rect.center = pos
         # spread = uniform(-GUN_SPREAD, GUN_SPREAD)
@@ -234,6 +243,7 @@ class Bullet(Entity):
         self.damage = damage
 
     def update(self):
+        # intentional: no super().update()
         self.pos += self.vel * self.game.dt
         self.rect.center = self.pos
         if pg.sprite.spritecollideany(self, self.game.walls):
@@ -260,50 +270,69 @@ class Obstacle(Block):
 
 
 class MuzzleFlash(Entity):
-    def __init__(self, game, pos):
+    def __init__(self, game, pos, zoom):
+        size = randint(20, 50)
+        super().__init__(
+            x=pos[0],
+            y=pos[1],
+            image=pg.transform.scale(choice(game.gun_flashes), (size, size)),
+            zoom=zoom,
+            game=game,
+        )
         self._layer = EFFECTS_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        size = randint(20, 50)
-        self.base_image = pg.transform.scale(choice(game.gun_flashes), (size, size))
-        self.image = pg.transform.scale(choice(game.gun_flashes), (size, size))
-        self.rect = self.image.get_rect()
-        self.hit_rect = self.image.get_rect()
-        self.pos = pos
-        self.rect.center = pos
-        self.hit_rect.center = pos
+
+        # self.base_image = pg.transform.scale(choice(game.gun_flashes), (size, size))
+        # self.image = pg.transform.scale(choice(game.gun_flashes), (size, size))
+        # self.rect = self.image.get_rect()
+        # self.hit_rect = self.image.get_rect()
+        # self.pos = pos
+        # self.rect.center = pos
+        # self.hit_rect.center = pos
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
+        # intentional: no super().update()
         if pg.time.get_ticks() - self.spawn_time > FLASH_DURATION:
             self.kill()
 
 
 class Item(Entity):
-    def __init__(self, game, pos, type):
+    def __init__(self, game, pos, type, zoom):
+        super().__init__(
+            x=pos[0],
+            y=pos[1],
+            image=game.item_images[type].copy(),
+            zoom=zoom,
+            game=game,
+        )
         self._layer = ITEMS_LAYER
         self.groups = game.all_sprites, game.items
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.base_image = game.item_images[type].copy()
-        self.image = game.item_images[type].copy()
-        self.rect = self.image.get_rect()
-        self.hit_rect = self.image.get_rect()
+        # self.base_image = game.item_images[type].copy()
+        # self.image = game.item_images[type].copy()
+        # self.rect = self.image.get_rect()
+        # self.hit_rect = self.image.get_rect()
         self.type = type
-        self.pos = pos
-        self.rect.center = pos
-        self.hit_rect.center = pos
+        # self.pos = pos
+        # self.rect.center = pos
+        # self.hit_rect.center = pos
         self.tween = tween.easeInOutSine
         self.step = 0
         self.dir = 1
 
     def update(self):
+        super().update()
         # bobbing motion
-        offset = BOB_RANGE * (self.tween(self.step / BOB_RANGE) - 0.5)
-        self.rect.centery = self.pos.y + offset * self.dir
-        self.hit_rect.centery = self.pos.y + offset * self.dir
-        self.step += BOB_SPEED
-        if self.step > BOB_RANGE:
+        bob_range = self.zoom.scale_factor * BOB_RANGE
+        interval = min(max(self.step / bob_range, 0), 1)
+        offset = bob_range * (self.tween(interval) - 0.5)
+        self.rect.centery = int(self.pos.y + offset * self.dir)
+        self.hit_rect.centery = int(self.pos.y + offset * self.dir)
+        self.step += BOB_SPEED * self.zoom.scale_factor
+        if self.step > bob_range:
             self.step = 0
             self.dir *= -1

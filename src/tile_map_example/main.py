@@ -127,6 +127,10 @@ class Game:
         self.map_img = self.map.make_map()
         self.base_map_img = self.map_img.copy()
         self.map.rect = self.map_img.get_rect()
+        self.map_wh = (
+            self.base_map_img.get_width(),
+            self.base_map_img.get_height(),
+        )
         for tile_object in self.map.tmxdata.objects:
             obj_center = vec(
                 tile_object.x + tile_object.width / 2,
@@ -146,8 +150,14 @@ class Game:
                     self.zoom,
                 )
             if tile_object.name in ["health", "shotgun"]:
-                Item(self, obj_center, tile_object.name)
-        self.camera = Camera(self.map.width, self.map.height, self.zoom, self.screen)
+                Item(self, obj_center, tile_object.name, self.zoom)
+        self.camera = Camera(
+            self.map.width,
+            self.map.height,
+            *self.map_wh,
+            self.zoom,
+            self.base_map_img,
+        )
         self.draw_debug = True
         self.paused = False
         self.night = False
@@ -233,13 +243,27 @@ class Game:
         if not display_rect:
             display_rect = pg.display.get_surface().get_rect()
 
+        max_x = self.map_wh[0] - display_rect.width
+        max_y = self.map_wh[1] - display_rect.height
+
         x, y = self.camera.camera.topleft
         inv_sf = 1 / self.zoom.sf
         x = abs(x) * inv_sf
         y = abs(y) * inv_sf
-        sub = pg.Rect(x, y, display_rect.width, display_rect.height)
-        sub_surface = self.base_map_img.subsurface(sub)
-        return self.zoom.scale_image(sub_surface)
+
+        sub = pg.Rect(
+            min(x, max_x), min(y, max_y), display_rect.width, display_rect.height
+        )
+
+        # print(
+        #     f"cam: {(self.camera.x, self.camera.y)} | display_rect: {display_rect} | base_img_rect: {self.base_map_img.get_rect()} | subsurface: {sub}"
+        # )
+
+        if display_rect.width < self.map_wh[0] and display_rect.height < self.map_wh[1]:
+            sub_surface = self.base_map_img.subsurface(sub)
+            return self.zoom.scale_image(sub_surface)
+        else:
+            return self.zoom.scale_image(self.base_map_img)
 
     def draw_map(self, just_black=False):
         self.screen.fill(BLACK)
@@ -255,8 +279,11 @@ class Game:
             w *= scale_factor
             h *= scale_factor
             scaled_rect = pg.Rect(display_rect.x, display_rect.y, w, h)
+
+            self.camera.set_scaled_rect(scaled_rect)
+
             self.map_img = self.get_map_img(display_rect=scaled_rect)
-            print(display_rect, scaled_rect)
+            # print(f"display rectangle: {display_rect} | scaled_rect: {scaled_rect}")
             self.screen.blit(
                 self.map_img,
                 scaled_rect,

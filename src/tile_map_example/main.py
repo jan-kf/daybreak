@@ -175,6 +175,7 @@ class Game:
 
     def update(self):
         # update portion of the game loop
+
         self.all_sprites.update()
 
         # self.camera.update(self.player) # camera follows the player
@@ -228,6 +229,39 @@ class Game:
     #     self.fog.blit(self.light_mask, self.light_rect)
     #     self.screen.blit(self.fog, (0, 0), special_flags=pg.BLEND_MULT)
 
+    def get_map_img(self, display_rect=None):
+        if not display_rect:
+            display_rect = pg.display.get_surface().get_rect()
+
+        x, y = self.camera.camera.topleft
+        inv_sf = 1 / self.zoom.sf
+        x = abs(x) * inv_sf
+        y = abs(y) * inv_sf
+        sub = pg.Rect(x, y, display_rect.width, display_rect.height)
+        sub_surface = self.base_map_img.subsurface(sub)
+        return self.zoom.scale_image(sub_surface)
+
+    def draw_map(self, just_black=False):
+        self.screen.fill(BLACK)
+        # print(self.camera.camera)
+        if not just_black:
+            # self.screen.blit(self.map_img, self.camera.apply(self.map)) # original
+            # self.screen.blit(self.map_img, self.camera.camera)
+
+            display_rect = pg.display.get_surface().get_rect()
+            scale_factor = 1 / self.zoom.sf
+            w = display_rect.width
+            h = display_rect.height
+            w *= scale_factor
+            h *= scale_factor
+            scaled_rect = pg.Rect(display_rect.x, display_rect.y, w, h)
+            self.map_img = self.get_map_img(display_rect=scaled_rect)
+            print(display_rect, scaled_rect)
+            self.screen.blit(
+                self.map_img,
+                scaled_rect,
+            )
+
     def draw(self):
         pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
 
@@ -235,10 +269,7 @@ class Game:
 
         # render the map:
         # TODO: only update/scale map when something changes (the scale, or the camera movement)
-        self.screen.fill(BLACK)
-        self.map_img = self.zoom.scale_image(self.base_map_img)
-        self.screen.blit(self.map_img, self.camera.apply(self.map))
-
+        self.draw_map()
         # render a black background (featureless map, practically no performance hit)
         # self.screen.fill(BLACK)
 

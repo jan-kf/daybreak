@@ -11,8 +11,9 @@ class Zoom:
         self.base_scale = 64
         self.base_scale_index = 2
         self.tile_sizes = [16, 32, 64, 128, 256]
-        self.scales = [0.25, 0.5, 1, 1.5, 2]
+        self.scales = [0.25, 0.5, 1, 2, 4]
         self.tile_size_index = 2
+        self.sf = self.scales[self.tile_size_index]
         self.scale = self.get_tile_size()
         self.prev_scale = self.get_tile_size()
         self.scale_factor = self.scale / self.prev_scale
@@ -35,6 +36,7 @@ class Zoom:
         self.prev_scale = self.scale
         self.tile_size_index += 1
         self.tile_size_index = min(4, self.tile_size_index)
+        self.sf = self.scales[self.tile_size_index]
         self.scale = self.get_tile_size()
         self.update_scale_factor()
         self.mouse = (x, y)
@@ -43,6 +45,7 @@ class Zoom:
         self.prev_scale = self.scale
         self.tile_size_index -= 1
         self.tile_size_index = max(0, self.tile_size_index)
+        self.sf = self.scales[self.tile_size_index]
         self.scale = self.get_tile_size()
         self.update_scale_factor()
         self.mouse = (x, y)

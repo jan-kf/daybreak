@@ -106,6 +106,7 @@ class Player(Entity):
 
     def update(self):
         super().update()
+        # print(self.pos)
         self.get_keys()
         # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
         # self.image = pg.transform.rotate(self.image, self.rot)

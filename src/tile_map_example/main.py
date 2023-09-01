@@ -9,6 +9,8 @@ from sprites import *
 from tilemap import *
 from base import Zoom
 
+vec = pg.math.Vector2
+
 
 # HUD functions
 def draw_player_health(surf, x, y, pct):
@@ -259,6 +261,8 @@ class Game:
         #     f"cam: {(self.camera.x, self.camera.y)} | display_rect: {display_rect} | base_img_rect: {self.base_map_img.get_rect()} | subsurface: {sub}"
         # )
 
+        # self.camera.set_scaled_rect(sub)
+
         if display_rect.width < self.map_wh[0] and display_rect.height < self.map_wh[1]:
             sub_surface = self.base_map_img.subsurface(sub)
             return self.zoom.scale_image(sub_surface)
@@ -279,10 +283,10 @@ class Game:
             w *= scale_factor
             h *= scale_factor
             scaled_rect = pg.Rect(display_rect.x, display_rect.y, w, h)
-
-            self.camera.set_scaled_rect(scaled_rect)
+            # self.camera.set_scaled_rect(scaled_rect)
 
             self.map_img = self.get_map_img(display_rect=scaled_rect)
+            self.camera.set_scaled_rect(scaled_rect)
             # print(f"display rectangle: {display_rect} | scaled_rect: {scaled_rect}")
             self.screen.blit(
                 self.map_img,
@@ -356,11 +360,17 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 print(event.__dict__)
                 x, y = pg.mouse.get_pos()
+                mouse_vec = vec(x, y)
+                display_rect = pg.display.get_surface().get_rect()
                 print(f"Clicked at ({x}, {y})")
                 if event.button == 4:
                     self.area = self.zoom.zoom_in(x, y)
+                    self.draw_map()
+                    self.camera.zoom_in(mouse_vec, display_rect)
                 elif event.button == 5:
                     self.area = self.zoom.zoom_out(x, y)
+                    self.draw_map()
+                    self.camera.zoom_out(mouse_vec, display_rect)
                 elif event.button == 1:
                     self.area = self.zoom.reset()
             if event.type == pg.QUIT:

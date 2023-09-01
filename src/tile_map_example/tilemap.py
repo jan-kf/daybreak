@@ -2,7 +2,7 @@ import pygame as pg
 import pytmx
 from settings import *
 from helpers import debounce
-from base import Entity, Block
+from base import Entity, Block, Zoom
 
 
 def collide_hit_rect(one, two):
@@ -58,7 +58,9 @@ class TiledMap:
 
 
 class Camera:
-    def __init__(self, width, height, max_width, max_height, zoom, map_img: pg.Surface):
+    def __init__(
+        self, width, height, max_width, max_height, zoom: Zoom, map_img: pg.Surface
+    ):
         self.camera = pg.Rect(0, 0, width, height)
 
         self.sf = 1.0
@@ -68,11 +70,13 @@ class Camera:
         self.height = height
         self.x = 0
         self.y = 0
-        self.zoom = zoom
+        self.zoom: Zoom = zoom
         self.map_img = map_img
         self.max_width = max_width
         self.max_height = max_height
         self.scaled_rect: pg.Rect | None = None
+        self.rect2: pg.Rect | None = None
+        self.prev_sf = 0
 
     def apply(self, entity: Entity | TiledMap):
         # print(entity.rect.topleft, entity.rect.bottomright)
@@ -81,8 +85,8 @@ class Camera:
     def apply_rect(self, rect: pg.Rect):
         return rect.move(self.camera.topleft)
 
-    def set_scaled_rect(self, rect):
-        self.scaled_rect = rect
+    def set_scaled_rect(self, rect1):
+        self.scaled_rect = rect1
 
     # def get_keys(self):
     #     self.rot_speed = 0
@@ -106,15 +110,61 @@ class Camera:
         # self.y = max(-(self.height - HEIGHT), self.y)  # bottom
 
         if self.scaled_rect is not None:
+            # print(f"scaled_rect: {self.scaled_rect} {self.zoom.sf}")
             max_x = (self.map_img.get_width() - self.scaled_rect.width) * self.zoom.sf
             max_y = (self.map_img.get_height() - self.scaled_rect.height) * self.zoom.sf
 
             self.x = max(-max_x, self.x)
             self.y = max(-max_y, self.y)
 
-            # print(
-            #     f"mx: {max_x }, my: {max_y } | x: {self.x}, y: {self.y}"
-            # )
+        # print(
+        #     f"mx: {max_x }, my: {max_y } | x: {self.x}, y: {self.y}"
+        # )
+
+    def cap_zoom(self):
+        if self.zoom.sf == self.prev_sf:
+            return True
+        else:
+            self.prev_sf = self.zoom.sf
+            return False
+
+    def get_true_vector(self, display_vector: pg.math.Vector2):
+        # display_vector is a vector with respect to the display window
+        # ex: a vector A: <3, 6> 's true vector are 3+self.x, 6+self.y
+        return vec(self.x, self.y) + display_vector
+
+    def zoom_by_factor(
+        self, mouse_vec: pg.math.Vector2, display_rect: pg.Rect, factor: int | float
+    ):
+        # display_rect: the rectangle of the display (resolution of the window)
+        # mouse_vec: the vector of the mouse position at the time of zoom, with respect to the display window
+        # if you want to zoom in directly in the center, then you need to provide:
+        #   vec(display_rect.centerx, display_rect.centery)
+        #   as the mouse_vec
+
+        if self.cap_zoom():
+            return False
+
+        center = mouse_vec
+        true_center = self.get_true_vector(-center)
+        new_true_center = true_center * factor
+        new_topleft = new_true_center + center
+
+        ### debug:
+        # print(
+        #     f"True center: {true_center} | new true center: {new_true_center} | new topleft: {new_topleft}"
+        # )
+
+        self.x, self.y = new_topleft
+        self.clamp_scroll()
+
+    def zoom_in(self, mouse_vec: pg.math.Vector2, display_rect: pg.Rect):
+        self.zoom_by_factor(mouse_vec, display_rect, 2)
+        return True
+
+    def zoom_out(self, mouse_vec: pg.math.Vector2, display_rect: pg.Rect):
+        self.zoom_by_factor(mouse_vec, display_rect, 0.5)
+        return True
 
     def move_camera(self):
         cam_move_speed = 2
@@ -153,6 +203,7 @@ class Camera:
             print(self.camera)
 
         self.clamp_scroll()
+        # print("final topleft:", self.x, self.y)
 
     @debounce(wait=1)
     def increment_zoom(self):
@@ -170,16 +221,20 @@ class Camera:
         # y = -target.rect.centery + int(HEIGHT / 2)
 
         # limit scrolling to map size
-        x = min(0, self.x)  # left
-        y = min(0, self.y)  # top
+        # x = min(0, self.x)  # left
+        # y = min(0, self.y)  # top
+
         # x = max(-(self.width - self.zoom.get_linear_update(WIDTH, inverse=True)), x)  # right
         # y = max(-(self.height - self.zoom.get_linear_update(HEIGHT, inverse=True)), y)  # bottom
-        x = max(-(self.width - WIDTH), x)  # right
-        y = max(-(self.height - HEIGHT), y)  # bottom
+
+        # x = max(-(self.width - WIDTH), x)  # right
+        # y = max(-(self.height - HEIGHT), y)  # bottom
 
         # self.zoom.scale_rectangle(self.camera, self.sf)
         # print(self.camera.bottomright, self.camera.topleft)
-        self.camera = pg.Rect(x, y, self.width, self.height)
+
+        # if this line does not run, the camera won't update
+        self.camera = pg.Rect(self.x, self.y, self.width, self.height)
         # pg.draw.rect(self.screen, CYAN, self.apply_rect(self.camera), 1)
         # self.camera = z
         # self.camera.fill('black')

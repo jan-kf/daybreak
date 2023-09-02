@@ -39,7 +39,6 @@ class Game:
         flags = pg.RESIZABLE
         self.screen = pg.display.set_mode((WIDTH, HEIGHT), flags)
         self.rect = self.screen.get_rect()
-        print(self.rect, self.screen.get_size())
         self.zoom = Zoom()
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()

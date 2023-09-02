@@ -36,20 +36,11 @@ class Player(Entity):
         self._layer = PLAYER_LAYER
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        # self.game = game
-        # self.base_image = game.player_img.copy()
-        # self.image = game.player_img.copy()
-        # self.rect = self.image.get_rect()
-        # self.hit_rect = self.rect
-        # self.vel = vec(0, 0)
-        # self.pos = vec(x, y)
-        # self.rot = 0
+
         self.last_shot = 0
         self.health = PLAYER_HEALTH
         self.weapon = "pistol"
         self.damaged = False
-        # self.rect.center = (x, y)
-        # self.hit_rect.center = self.rect.center
 
     def get_keys(self):
         self.rot_speed = 0
@@ -79,7 +70,7 @@ class Player(Entity):
         if now - self.last_shot > WEAPONS[self.weapon]["rate"]:
             self.last_shot = now
             dir = vec(1, 0).rotate(-self.rot)
-            pos = (self.pos) + (BARREL_OFFSET * self.zoom.sf).rotate(-self.rot)
+            pos = (self.get_pos()) + (BARREL_OFFSET * self.zoom.sf).rotate(-self.rot)
 
             self.vel = vec(
                 -(self.game.zoom.get_linear_update(WEAPONS[self.weapon]["kickback"])), 0
@@ -108,8 +99,9 @@ class Player(Entity):
 
     def update(self):
         super().update()
-        # print(self.pos)
+
         self.get_keys()
+
         # self.rot = (self.rot + self.rot_speed * self.game.dt) % 360
         # self.image = pg.transform.rotate(self.image, self.rot)
         if self.damaged:
@@ -144,18 +136,7 @@ class Mob(Entity):
         self._layer = MOB_LAYER
         self.groups = game.all_sprites, game.mobs
         pg.sprite.Sprite.__init__(self, self.groups)
-        # self.game = game
-        # self.base_image = game.mob_img.copy()
-        # self.image = game.mob_img.copy()
-        # self.rect = self.image.get_rect()
-        # self.rect.center = (x, y)
-        # self.hit_rect = self.rect.copy()
-        # self.hit_rect.center = self.rect.center
-        # self.pos = vec(x, y)
-        # self.vel = vec(0, 0)
-        # self.acc = vec(0, 0)
-        # self.rect.center = self.get_pos()
-        # self.rot = 0
+
         self.health = MOB_HEALTH
         self.speed = choice(MOB_SPEEDS)
         self.target = game.player
@@ -278,6 +259,7 @@ class MuzzleFlash(Entity):
             image=pg.transform.scale(choice(game.gun_flashes), (size, size)),
             zoom=zoom,
             game=game,
+            relative=True,
         )
         self._layer = EFFECTS_LAYER
         self.groups = game.all_sprites

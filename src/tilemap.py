@@ -145,10 +145,17 @@ class Camera:
         if self.cap_zoom():
             return False
 
-        center = mouse_vec
-        true_center = self.get_true_vector(-center)
-        new_true_center = true_center * factor
-        new_topleft = new_true_center + center
+        # version 0.1:
+        # center = mouse_vec
+        # true_center = self.get_true_vector(-center)
+        # new_true_center = true_center * factor
+        # new_topleft = new_true_center + center
+
+
+        # version 0.2:
+        # A*s + B(s-1)
+        topleft = vec(self.x, self.y) 
+        new_topleft = topleft * factor + (-mouse_vec) * (factor - 1)
 
         ### debug:
         # print(

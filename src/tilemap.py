@@ -104,10 +104,7 @@ class Camera:
     def clamp_scroll(self):
         self.x = min(0, self.x)  # left
         self.y = min(0, self.y)  # top
-        # self.x = max(-(self.width - self.zoom.get_linear_update(WIDTH, inverse=True)), self.x)  # right
-        # self.y = max(-(self.height - self.zoom.get_linear_update(HEIGHT, inverse=True)), self.y)  # bottom
-        # self.x = max(-(self.width - WIDTH), self.x)  # right
-        # self.y = max(-(self.height - HEIGHT), self.y)  # bottom
+
 
         if self.scaled_rect is not None:
             # print(f"scaled_rect: {self.scaled_rect} {self.zoom.sf}")
@@ -194,54 +191,17 @@ class Camera:
             self.x -= cam_move_speed
         if keys[pg.K_0]:
             print("pressed plus")
-            # self.x -= 1
-            # self.y -= 1
-            # self.width -= 1
-            # self.height -= 1
-            # self.increment_zoom()
+
             print(self.camera)
         if keys[pg.K_9]:
             print("pressed minus")
-            # self.x += 1
-            # self.y += 1
-            # self.width += 1
-            # self.height += 1
-            # self.decrement_zoom()
+
             print(self.camera)
 
         self.clamp_scroll()
         # print("final topleft:", self.x, self.y)
 
-    @debounce(wait=1)
-    def increment_zoom(self):
-        self.sf += 0.1
-
-    @debounce(wait=1)
-    def decrement_zoom(self):
-        self.sf -= 0.1
-
     def update(self):
         self.move_camera()
-        # print(self.x, self.y)
-
-        # x = -target.rect.centerx + int(WIDTH / 2)
-        # y = -target.rect.centery + int(HEIGHT / 2)
-
-        # limit scrolling to map size
-        # x = min(0, self.x)  # left
-        # y = min(0, self.y)  # top
-
-        # x = max(-(self.width - self.zoom.get_linear_update(WIDTH, inverse=True)), x)  # right
-        # y = max(-(self.height - self.zoom.get_linear_update(HEIGHT, inverse=True)), y)  # bottom
-
-        # x = max(-(self.width - WIDTH), x)  # right
-        # y = max(-(self.height - HEIGHT), y)  # bottom
-
-        # self.zoom.scale_rectangle(self.camera, self.sf)
-        # print(self.camera.bottomright, self.camera.topleft)
-
-        # if this line does not run, the camera won't update
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
-        # pg.draw.rect(self.screen, CYAN, self.apply_rect(self.camera), 1)
-        # self.camera = z
-        # self.camera.fill('black')
+

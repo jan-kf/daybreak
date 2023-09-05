@@ -411,7 +411,7 @@ class Game:
             HEIGHT * 3 / 4,
             align="center",
         )
-        self.zoom.tile_size_index = 2
+        self.zoom.sf = 1
         pg.display.flip()
         self.wait_for_key()
 

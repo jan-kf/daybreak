@@ -14,46 +14,24 @@ class Zoom:
         self.scales = [0.25, 0.5, 1, 2, 4]
         self.tile_size_index = 2
         self.sf: float | int = self.scales[self.tile_size_index]
-        self.scale = self.get_tile_size()
-        self.prev_scale = self.get_tile_size()
-        self.scale_factor = self.scale / self.prev_scale
-        self.net_scale_factor = self.scale / self.base_scale
-        self.mouse = (0, 0)
-
-    def update_scale_factor(self):
-        self.scale_factor = self.scale / self.prev_scale
-        self.net_scale_factor = self.scale / self.base_scale
-
-        print(
-            f"Scale: {self.scale} Prev_Scale: {self.prev_scale} ScaleFactor: {self.scale_factor} NetScaleFactor: {self.net_scale_factor}"
-        )
 
     def reset(self):
-        self.scale = self.base_scale
-        self.update_scale_factor()
+        self.tile_size_index = self.base_scale_index
 
     def zoom_in(self, x, y):
-        self.prev_scale = self.scale
         self.tile_size_index += 1
         self.tile_size_index = min(4, self.tile_size_index)
         self.sf = self.scales[self.tile_size_index]
-        self.scale = self.get_tile_size()
-        self.update_scale_factor()
-        self.mouse = (x, y)
 
     def zoom_out(self, x, y):
-        self.prev_scale = self.scale
         self.tile_size_index -= 1
         self.tile_size_index = max(0, self.tile_size_index)
         self.sf = self.scales[self.tile_size_index]
-        self.scale = self.get_tile_size()
-        self.update_scale_factor()
-        self.mouse = (x, y)
 
     def scale_image(self, img: pg.Surface):
         w, h = img.get_size()
-        w *= self.net_scale_factor
-        h *= self.net_scale_factor
+        w *= self.sf
+        h *= self.sf
         return pg.transform.scale(img, (w, h))
 
     def scale_rectangle(self, rect: pg.Rect, scale_factor=1.0):
@@ -63,7 +41,7 @@ class Zoom:
         pass
 
     def get_tile_size(self):
-        return self.tile_sizes[self.tile_size_index]
+        return self.base_scale * self.sf
 
     def get_linear_update(self, base_value, inverse=False):
         # return base_value
@@ -76,12 +54,10 @@ class Zoom:
         # 128 - 800
         # 256 - 1600
 
-        if self.scale == self.base_scale:
-            return base_value
         if inverse:
-            factor = self.net_scale_factor
+            factor = self.sf
         else:
-            factor = self.base_scale / self.scale
+            factor = 1 / self.sf
         return base_value / factor
 
     def get_new_size_from_scale(

@@ -309,12 +309,12 @@ class Item(Entity):
     def update(self):
         super().update()
         # bobbing motion
-        bob_range = self.zoom.scale_factor * BOB_RANGE
+        bob_range = self.zoom.sf * BOB_RANGE
         interval = min(max(self.step / bob_range, 0), 1)
         offset = bob_range * (self.tween(interval) - 0.5)
         self.rect.centery = int(self.pos.y + offset * self.dir)
         self.hit_rect.centery = int(self.pos.y + offset * self.dir)
-        self.step += BOB_SPEED * self.zoom.scale_factor
+        self.step += BOB_SPEED * self.zoom.sf
         if self.step > bob_range:
             self.step = 0
             self.dir *= -1

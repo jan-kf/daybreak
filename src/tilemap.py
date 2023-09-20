@@ -102,10 +102,6 @@ class Camera:
     #         self.vel = vec(-PLAYER_SPEED / 2, 0)
 
     def clamp_scroll(self):
-        self.x = min(0, self.x)  # left
-        self.y = min(0, self.y)  # top
-
-
         if self.scaled_rect is not None:
             # print(f"scaled_rect: {self.scaled_rect} {self.zoom.sf}")
             max_x = (self.map_img.get_width() - self.scaled_rect.width) * self.zoom.sf
@@ -114,6 +110,8 @@ class Camera:
             self.x = max(-max_x, self.x)
             self.y = max(-max_y, self.y)
 
+        self.x = min(0, self.x)  # left
+        self.y = min(0, self.y)  # top
         # print(
         #     f"mx: {max_x }, my: {max_y } | x: {self.x}, y: {self.y}"
         # )

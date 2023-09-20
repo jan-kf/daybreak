@@ -1,5 +1,5 @@
 import pygame as pg
-from typing import List, Tuple
+from typing import Tuple
 
 vec = pg.math.Vector2
 Coordinate = Tuple[int, int]
@@ -9,33 +9,47 @@ Size = Tuple[int, int]
 class Zoom:
     def __init__(self):
         self.base_scale = 64
-        self.base_scale_index = 2
-        self.tile_sizes = [16, 32, 64, 128, 256]
-        self.scales = [0.25, 0.5, 1, 2, 4]
-        self.tile_size_index = 2
-        self.sf: float | int = self.scales[self.tile_size_index]
+        self.zoom_factor = 0
+        self.max_delta_zf = 4
+        self.calculate_sf()
+
+    def calculate_sf(self):
+        # zoom_factor | sf (scale_factor)
+        # ...
+        #  2 -> 4
+        #  1 -> 2
+        #  0 -> 1
+        # -1 -> 0.5
+        # -2 -> 0.25
+        # ...
+        #
+        # y = 2 ** x
+
+        # clamp zoom_factor:
+        if abs(self.zoom_factor) > self.max_delta_zf:
+            # handle positive/negative
+            sign = 1 if self.zoom_factor >= 0 else -1
+
+            self.zoom_factor = self.max_delta_zf * sign
+
+        self.sf: float | int = 2**self.zoom_factor
 
     def reset(self):
-        self.tile_size_index = self.base_scale_index
+        self.zoom_factor = 0
 
     def zoom_in(self, x, y):
-        self.tile_size_index += 1
-        self.tile_size_index = min(4, self.tile_size_index)
-        self.sf = self.scales[self.tile_size_index]
+        self.zoom_factor += 1
+        self.calculate_sf()
 
     def zoom_out(self, x, y):
-        self.tile_size_index -= 1
-        self.tile_size_index = max(0, self.tile_size_index)
-        self.sf = self.scales[self.tile_size_index]
+        self.zoom_factor -= 1
+        self.calculate_sf()
 
     def scale_image(self, img: pg.Surface):
         w, h = img.get_size()
         w *= self.sf
         h *= self.sf
         return pg.transform.scale(img, (w, h))
-
-    def scale_rectangle(self, rect: pg.Rect, scale_factor=1.0):
-        rect.scale_by_ip(x=float(scale_factor), y=float(scale_factor))
 
     def update(self, *args, **kwargs) -> None:
         pass

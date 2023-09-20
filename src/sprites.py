@@ -133,10 +133,9 @@ class Player(Entity):
 class Mob(Entity):
     def __init__(self, game, x, y, zoom):
         super().__init__(x=x, y=y, image=game.mob_img.copy(), zoom=zoom, game=game)
-        self._layer = MOB_LAYER
-        self.groups = game.all_sprites, game.mobs
-        pg.sprite.Sprite.__init__(self, self.groups)
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.mobs)
 
+        self._layer = MOB_LAYER
         self.health = MOB_HEALTH
         self.speed = choice(MOB_SPEEDS)
         self.target = game.player
@@ -202,9 +201,8 @@ class Bullet(Entity):
             zoom=zoom,
             game=game,
         )
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.bullets)
         self._layer = BULLET_LAYER
-        self.groups = game.all_sprites, game.bullets
-        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # self.base_image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
         # self.image = game.bullet_images[WEAPONS[game.player.weapon]["bullet_size"]]
@@ -290,9 +288,9 @@ class Item(Entity):
             zoom=zoom,
             game=game,
         )
+        pg.sprite.Sprite.__init__(self, game.all_sprites, game.items)
+
         self._layer = ITEMS_LAYER
-        self.groups = game.all_sprites, game.items
-        pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         # self.base_image = game.item_images[type].copy()
         # self.image = game.item_images[type].copy()

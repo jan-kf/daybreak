@@ -1,9 +1,16 @@
 import pygame as pg
-from typing import Tuple
+from typing import Tuple, TypeVar, List, Iterable, cast
 
 vec = pg.math.Vector2
 Coordinate = Tuple[int, int]
 Size = Tuple[int, int]
+
+T = TypeVar("T")
+
+
+def sprite_collision(sprite, group: Iterable[T], dokill, collided=None) -> List[T]:
+    result = pg.sprite.spritecollide(sprite, group, dokill, collided=collided)  # type: ignore
+    return result
 
 
 class Zoom:
@@ -32,7 +39,7 @@ class Zoom:
 
             self.zoom_factor = self.max_delta_zf * sign
 
-        self.sf: float | int = 2**self.zoom_factor
+        self.sf: int = 2**self.zoom_factor
 
     def reset(self):
         self.zoom_factor = 0

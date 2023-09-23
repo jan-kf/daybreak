@@ -1,8 +1,7 @@
 import pygame as pg
 import pytmx
 from settings import *
-from helpers import debounce
-from base import Entity, Block, Zoom
+from base import Entity, Zoom
 
 
 def collide_hit_rect(one, two):
@@ -38,7 +37,7 @@ class TiledMap:
                     x,
                     y,
                     gid,
-                ) in layer:
+                ) in layer.iter_data():
                     tile = ti(gid)
                     if tile:
                         surface.blit(
@@ -146,10 +145,9 @@ class Camera:
         # new_true_center = true_center * factor
         # new_topleft = new_true_center + center
 
-
         # version 0.2:
         # A*s + B(s-1)
-        topleft = vec(self.x, self.y) 
+        topleft = vec(self.x, self.y)
         new_topleft = topleft * factor + (-mouse_vec) * (factor - 1)
 
         ### debug:
@@ -202,4 +200,3 @@ class Camera:
     def update(self):
         self.move_camera()
         self.camera = pg.Rect(self.x, self.y, self.width, self.height)
-

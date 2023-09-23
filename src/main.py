@@ -7,7 +7,8 @@ from os import path
 from settings import *
 from sprites import *
 from tilemap import *
-from base import Zoom
+from base import Zoom, sprite_collision
+from typing import List
 
 vec = pg.math.Vector2
 
@@ -121,9 +122,9 @@ class Game:
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.LayeredUpdates()
         self.walls = pg.sprite.Group()
-        self.mobs = pg.sprite.Group()
-        self.bullets = pg.sprite.Group()
-        self.items = pg.sprite.Group()
+        self.mobs: pg.sprite.Group[Mob] = pg.sprite.Group()  # type: ignore (can't fix without using private types)
+        self.bullets: pg.sprite.Group[Bullet] = pg.sprite.Group()  # type: ignore (can't fix without using private types)
+        self.items: pg.sprite.Group[Item] = pg.sprite.Group()  # type: ignore (can't fix without using private types)
         self.map = TiledMap(path.join(self.map_folder, "level1.tmx"))
         self.map_img = self.map.make_map()
         self.base_map_img = self.map_img.copy()
@@ -197,7 +198,7 @@ class Game:
         if len(self.mobs) == 0:
             self.playing = False
         # player hits items
-        hits = pg.sprite.spritecollide(self.player, self.items, False)
+        hits = sprite_collision(self.player, self.items, False)
         for hit in hits:
             if hit.type == "health" and self.player.health < PLAYER_HEALTH:
                 hit.kill()
@@ -208,7 +209,7 @@ class Game:
                 self.effects_sounds["gun_pickup"].play()
                 self.player.weapon = "shotgun"
         # mobs hit player
-        hits = pg.sprite.spritecollide(self.player, self.mobs, False, collide_hit_rect)
+        hits = sprite_collision(self.player, self.mobs, False, collide_hit_rect)
         for hit in hits:
             if random() < 0.7:
                 choice(self.player_hit_sounds).play()
@@ -220,7 +221,7 @@ class Game:
             self.player.hit()
             self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
         # bullets hit mobs
-        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)
+        hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)  # type: ignore (I'm not sure how to improve)
         for mob in hits:
             # hit.health -= WEAPONS[self.player.weapon]['damage'] * len(hits[hit])
             for bullet in hits[mob]:
@@ -321,8 +322,9 @@ class Game:
                 pg.draw.rect(self.screen, CYAN, self.camera.apply_rect(wall.rect), 1)
 
         # pg.draw.rect(self.screen, WHITE, self.player.hit_rect, 2)
-        if self.night:
-            self.render_fog()
+        # if self.night:
+        #     self.render_fog()
+
         # HUD functions
         draw_player_health(self.screen, 10, 10, self.player.health / PLAYER_HEALTH)
         self.draw_text(

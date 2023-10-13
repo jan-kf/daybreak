@@ -229,10 +229,22 @@ class Game:
             mob.vel = vec(0, 0)
 
     def draw_grid(self):
-        for x in range(0, WIDTH, self.zoom.get_tile_size()):
-            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, self.zoom.get_tile_size()):
-            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+        camera_top_left_x, camera_top_left_y = self.camera.camera.topleft
+        max_possible_x, max_possible_y = self.camera.get_map_boundary()
+        for x in range(0, max_possible_x, self.zoom.get_tile_size()):
+            pg.draw.line(
+                self.screen,
+                LIGHTGREY,
+                (x + camera_top_left_x, 0),
+                (x + camera_top_left_x, max_possible_y),
+            )
+        for y in range(0, max_possible_y, self.zoom.get_tile_size()):
+            pg.draw.line(
+                self.screen,
+                LIGHTGREY,
+                (0, y + camera_top_left_y),
+                (max_possible_x, y + camera_top_left_y),
+            )
 
     # def render_fog(self):
     #     # draw the light mask (gradient) onto fog image
@@ -256,12 +268,6 @@ class Game:
         sub = pg.Rect(
             min(x, max_x), min(y, max_y), display_rect.width, display_rect.height
         )
-
-        # print(
-        #     f"cam: {(self.camera.x, self.camera.y)} | display_rect: {display_rect} | base_img_rect: {self.base_map_img.get_rect()} | subsurface: {sub}"
-        # )
-
-        # self.camera.set_scaled_rect(sub)
 
         if display_rect.width < self.map_wh[0] and display_rect.height < self.map_wh[1]:
             sub_surface = self.base_map_img.subsurface(sub)
@@ -305,7 +311,7 @@ class Game:
         # self.screen.fill(BLACK)
 
         # pg.display.flip()
-        # self.draw_grid()
+
         for sprite in self.all_sprites:
             # self.zoom.update(sprite, self.screen)
             if isinstance(sprite, Mob):
@@ -316,6 +322,7 @@ class Game:
                     self.screen, CYAN, self.camera.apply_rect(sprite.hit_rect), 1
                 )
         if self.draw_debug:
+            self.draw_grid()
             for wall in self.walls:
                 # self.zoom.update(wall, self.screen)
                 wall.update()
@@ -377,7 +384,6 @@ class Game:
             if event.type == pg.QUIT:
                 self.quit()
             if event.type == pg.KEYDOWN:
-                print(event.__dict__)
                 if event.key == pg.K_ESCAPE:
                     self.quit()
                 if event.key == pg.K_h:

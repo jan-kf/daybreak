@@ -62,7 +62,7 @@ class Zoom:
         pass
 
     def get_tile_size(self):
-        return self.base_scale * self.sf
+        return int(self.base_scale * self.sf)
 
     def get_linear_update(self, base_value, inverse=False):
         # return base_value

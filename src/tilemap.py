@@ -58,7 +58,13 @@ class TiledMap:
 
 class Camera:
     def __init__(
-        self, width, height, max_width, max_height, zoom: Zoom, map_img: pg.Surface
+        self,
+        width,
+        height,
+        max_width,
+        max_height,
+        zoom: Zoom,
+        map_img: pg.Surface,
     ):
         self.camera = pg.Rect(0, 0, width, height)
 
@@ -86,6 +92,13 @@ class Camera:
 
     def set_scaled_rect(self, rect1):
         self.scaled_rect = rect1
+
+    def get_map_boundary(self):
+        if self.scaled_rect is not None:
+            max_x = (self.map_img.get_width()) * self.zoom.sf
+            max_y = (self.map_img.get_height()) * self.zoom.sf
+            return (int(max_x), int(max_y))
+        return (int(self.map_img.get_width()), int(self.map_img.get_height()))
 
     # def get_keys(self):
     #     self.rot_speed = 0
@@ -169,14 +182,7 @@ class Camera:
     def move_camera(self):
         cam_move_speed = 2
         keys = pg.key.get_pressed()
-        # if keys[pg.K_UP] or keys[pg.K_w]:
-        #     self.y += cam_move_speed
-        # if keys[pg.K_DOWN] or keys[pg.K_s]:
-        #     self.y -= cam_move_speed
-        # if keys[pg.K_LEFT] or keys[pg.K_a]:
-        #     self.x += cam_move_speed
-        # if keys[pg.K_RIGHT] or keys[pg.K_d]:
-        #     self.x -= cam_move_speed
+
         if keys[pg.K_w]:
             self.y += cam_move_speed
         if keys[pg.K_s]:

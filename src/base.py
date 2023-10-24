@@ -1,5 +1,5 @@
 import pygame as pg
-from typing import Tuple, TypeVar, List, Iterable, cast
+from typing import Tuple, TypeVar, List, Iterable
 
 vec = pg.math.Vector2
 Coordinate = Tuple[int, int]
@@ -17,7 +17,8 @@ class Zoom:
     def __init__(self):
         self.base_scale = 64
         self.zoom_factor = 0
-        self.max_delta_zf = 4
+        self.max_zoom_in = 2  # cap to 2x zoom in
+        self.max_zoom_out = -4  # cap to 4x zoom out
         self.calculate_sf()
 
     def calculate_sf(self):
@@ -33,11 +34,10 @@ class Zoom:
         # y = 2 ** x
 
         # clamp zoom_factor:
-        if abs(self.zoom_factor) > self.max_delta_zf:
-            # handle positive/negative
-            sign = 1 if self.zoom_factor >= 0 else -1
-
-            self.zoom_factor = self.max_delta_zf * sign
+        if self.zoom_factor > self.max_zoom_in:
+            self.zoom_factor = self.max_zoom_in
+        elif self.zoom_factor < self.max_zoom_out:
+            self.zoom_factor = self.max_zoom_out
 
         self.sf: int = 2**self.zoom_factor
 
@@ -106,6 +106,16 @@ class Shape(pg.sprite.Sprite):
         self.rect: pg.rect.Rect = pg.Rect(0, 0, 0, 0)
         self.hit_rect: pg.rect.Rect = pg.Rect(0, 0, 0, 0)
 
+    def get_top_left_coords(self):
+        return self.rect.x, self.rect.y
+
+    def get_center_coords(self):
+        return self.rect.centerx, self.rect.centery
+
+    def vec_to_center(self, vec):
+        x, y = vec
+        self.rect.center = (int(x), int(y))
+
     def get_scaled_2tuple(self, attr):
         return (
             self.zoom.get_new_val_from_scale(
@@ -119,6 +129,11 @@ class Shape(pg.sprite.Sprite):
                 int(self.zoom.base_scale * self.zoom.sf),
             ),
         )
+
+    def get_pos(self):
+        return vec(*self.get_scaled_2tuple("base_pos"))
+
+    # TODO: add a method that makes sure that the shape is centered in its respective grid tile when not moving
 
     def update(self):
         ...
@@ -145,22 +160,45 @@ class Entity(Shape):
         )
         return pg.transform.scale(self.base_image.copy(), (w, h))
 
-    def get_pos(self):
-        return vec(*self.get_scaled_2tuple("base_pos"))
-
     def entity_update(self, relative: bool = False) -> None:
-        self.image = self.get_image()
-        if relative:
-            self.pos = self.base_pos
-        else:
-            self.pos = self.get_pos()
+        self.image = pg.transform.rotate(self.get_image(), self.rot)
+
+        x, y = self.get_pos()
+
         self.rect = self.image.get_rect()
+        self.rect.center = (int(x), int(y))
         self.hit_rect = self.rect
-        self.rect.center = (int(self.pos.x), int(self.pos.y))
-        self.hit_rect.center = self.rect.center
+        # self.hit_rect.center = self.rect.center
 
     def update(self) -> None:
         self.entity_update()
+
+
+class MotionEntity(Entity):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+    # motion options:
+    # move to specific point
+    # move to point that moves (seeking)
+    # move relatively to current position (direct control)
+
+    # motion config:
+    # direct vs pathfinder
+    #   ignore obstacles and collide, or navigate?
+
+    # v0.1 motion idea:
+    # given a grid of locations, path-find from location to target
+    # final path calculation will be a series of movements from one grid to another
+    # ex: 0,0 to 3,4 ->| 0,0 > 1,1 > 2,2 > 3,3 > 3,4
+    # perform the movements in that order. Recalculate every few moves to see if the terrain has changed
+
+    def move_to(self, target):
+        ...
+
+    def displace(self, displacement_vector: vec):
+        # move along vector (direct control)
+        self.vel = displacement_vector
 
 
 class Block(Shape):
@@ -172,19 +210,13 @@ class Block(Shape):
 
         self.block_update()
 
-    def get_pos(self):
-        return self.get_scaled_2tuple("base_pos")
-
     def get_size(self):
         return self.get_scaled_2tuple("base_size")
 
     def block_update(self) -> None:
-        self.x, self.y = self.get_pos()
-        self.w, self.h = self.get_size()
-        self.rect: pg.rect.Rect = pg.Rect(self.x, self.y, self.w, self.h)
+        _x, _y = self.get_pos()
+        self.rect: pg.rect.Rect = pg.Rect(_x, _y, *self.get_size())
         self.hit_rect: pg.rect.Rect = self.rect
-        self.rect.x = int(self.x)
-        self.rect.y = int(self.y)
 
     def update(self) -> None:
         self.block_update()

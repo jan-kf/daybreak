@@ -45,6 +45,8 @@ class TiledMap:
                             (x * self.tmxdata.tilewidth, y * self.tmxdata.tileheight),
                         )
 
+    # TODO: Add a method that allow you to figure out what tile you're on
+
     def make_map(self):
         temp_surface = pg.Surface((self.width, self.height))
         self.render(temp_surface)

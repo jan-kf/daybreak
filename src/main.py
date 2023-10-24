@@ -161,6 +161,7 @@ class Game:
             self.base_map_img,
         )
         self.draw_debug = True
+        self.skip_drawing_map = False
         self.paused = False
         self.night = False
         self.effects_sounds["level_start"].play()
@@ -257,22 +258,22 @@ class Game:
         if not display_rect:
             display_rect = pg.display.get_surface().get_rect()
 
-        max_x = self.map_wh[0] - display_rect.width
-        max_y = self.map_wh[1] - display_rect.height
-
-        x, y = self.camera.camera.topleft
-        inv_sf = 1 / self.zoom.sf
-        x = abs(x) * inv_sf
-        y = abs(y) * inv_sf
-
-        sub = pg.Rect(
-            min(x, max_x), min(y, max_y), display_rect.width, display_rect.height
-        )
-
         if display_rect.width < self.map_wh[0] and display_rect.height < self.map_wh[1]:
+            # zoomed in to the point where the view box is smaller than entire map
+
+            max_x = self.map_wh[0] - display_rect.width
+            max_y = self.map_wh[1] - display_rect.height
+            x, y = self.camera.camera.topleft
+            inv_sf = 1 / self.zoom.sf
+            x = abs(x) * inv_sf
+            y = abs(y) * inv_sf
+            sub = pg.Rect(
+                min(x, max_x), min(y, max_y), display_rect.width, display_rect.height
+            )
             sub_surface = self.base_map_img.subsurface(sub)
             return self.zoom.scale_image(sub_surface)
         else:
+            # zoomed out and can see entire map
             return self.zoom.scale_image(self.base_map_img)
 
     def draw_map(self, just_black=False):
@@ -306,7 +307,7 @@ class Game:
 
         # render the map:
         # TODO: only update/scale map when something changes (the scale, or the camera movement)
-        self.draw_map()
+        self.draw_map(self.skip_drawing_map)
         # render a black background (featureless map, practically no performance hit)
         # self.screen.fill(BLACK)
 
@@ -373,11 +374,11 @@ class Game:
                 print(f"Clicked at ({x}, {y})")
                 if event.button == 4:
                     self.area = self.zoom.zoom_in(x, y)
-                    self.draw_map()
+                    self.draw_map(self.skip_drawing_map)
                     self.camera.zoom_in(mouse_vec, display_rect)
                 elif event.button == 5:
                     self.area = self.zoom.zoom_out(x, y)
-                    self.draw_map()
+                    self.draw_map(self.skip_drawing_map)
                     self.camera.zoom_out(mouse_vec, display_rect)
                 elif event.button == 1:
                     self.area = self.zoom.reset()
@@ -388,6 +389,8 @@ class Game:
                     self.quit()
                 if event.key == pg.K_h:
                     self.draw_debug = not self.draw_debug
+                if event.key == pg.K_g:
+                    self.skip_drawing_map = not self.skip_drawing_map
                 if event.key == pg.K_p:
                     self.paused = not self.paused
                 if event.key == pg.K_n:

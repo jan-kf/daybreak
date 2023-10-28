@@ -130,8 +130,14 @@ class Shape(pg.sprite.Sprite):
             ),
         )
 
-    def get_pos(self):
-        return vec(*self.get_scaled_2tuple("base_pos"))
+    def get_pos(self, offset=False):
+        current_tile_size = self.zoom.get_tile_size()
+        return (
+            vec(*self.get_scaled_2tuple("start_grid"))
+            * (current_tile_size * (1 / self.zoom.sf))
+        ) + (
+            vec(current_tile_size // 2, current_tile_size // 2) if offset else vec(0, 0)
+        )
 
     # TODO: add a method that makes sure that the shape is centered in its respective grid tile when not moving
 
@@ -144,7 +150,10 @@ class Entity(Shape):
         super().__init__(*args, **kwargs)
 
         self.base_image = kwargs["image"]
-        self.base_pos = vec(kwargs.get("x", 0), kwargs.get("y", 0))
+        # self.base_pos = vec(kwargs.get("x", 0), kwargs.get("y", 0))
+        self.start_grid = kwargs.get(
+            "grid", vec(0, 0)
+        )  # This is the grid-ref starting location
 
         self.vel = vec(0, 0)
         self.acc = vec(0, 0)
@@ -163,7 +172,7 @@ class Entity(Shape):
     def entity_update(self, relative: bool = False) -> None:
         self.image = pg.transform.rotate(self.get_image(), self.rot)
 
-        x, y = self.get_pos()
+        x, y = self.get_pos(offset=True)
 
         self.rect = self.image.get_rect()
         self.rect.center = (int(x), int(y))
@@ -205,7 +214,8 @@ class Block(Shape):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.base_pos: Coordinate = (kwargs.get("x", 0), kwargs.get("y", 0))
+        # self.base_pos: Coordinate = (kwargs.get("x", 0), kwargs.get("y", 0))
+        self.start_grid = kwargs.get("grid", vec(0, 0))
         self.base_size: Size = (kwargs.get("w", 0), kwargs.get("h", 0))
 
         self.block_update()

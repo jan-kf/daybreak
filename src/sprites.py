@@ -36,8 +36,8 @@ def collide_with_walls(sprite, group, dir):
 
 
 class Player(MotionEntity):
-    def __init__(self, game, x, y, zoom):
-        super().__init__(x=x, y=y, image=game.player_img.copy(), zoom=zoom, game=game)
+    def __init__(self, game, grid, zoom):
+        super().__init__(grid=grid, image=game.player_img.copy(), zoom=zoom, game=game)
         self._layer = PLAYER_LAYER
         pg.sprite.Sprite.__init__(self, game.all_sprites)
 
@@ -129,8 +129,8 @@ class Player(MotionEntity):
 
 
 class Mob(Entity):
-    def __init__(self, game, x, y, zoom):
-        super().__init__(x=x, y=y, image=game.mob_img.copy(), zoom=zoom, game=game)
+    def __init__(self, game, grid, zoom):
+        super().__init__(grid=grid, image=game.mob_img.copy(), zoom=zoom, game=game)
         pg.sprite.Sprite.__init__(self, game.all_sprites, game.mobs)
 
         self._layer = MOB_LAYER
@@ -231,8 +231,8 @@ class Bullet(Entity):
 
 
 class Obstacle(Block):
-    def __init__(self, game, x, y, w, h, zoom):
-        super().__init__(x=x, y=y, w=w, h=h, game=game, zoom=zoom)
+    def __init__(self, game, grid, w, h, zoom):
+        super().__init__(grid=grid, w=w, h=h, game=game, zoom=zoom)
         self.groups = game.walls
         pg.sprite.Sprite.__init__(self, self.groups)
 
@@ -261,10 +261,9 @@ class MuzzleFlash(Entity):
 
 
 class Item(Entity):
-    def __init__(self, game, pos, type, zoom):
+    def __init__(self, game, grid, type, zoom):
         super().__init__(
-            x=pos[0],
-            y=pos[1],
+            grid=grid,
             image=game.item_images[type].copy(),
             zoom=zoom,
             game=game,

@@ -134,19 +134,15 @@ class Game:
             self.base_map_img.get_height(),
         )
         for tile_object in self.map.tmxdata.objects:
-            obj_center = vec(
-                tile_object.x + tile_object.width / 2,
-                tile_object.y + tile_object.height / 2,
-            )
+            obj_center = vec(tile_object.x, tile_object.y)
             if tile_object.name == "player":
-                self.player = Player(self, obj_center.x, obj_center.y, self.zoom)
+                self.player = Player(self, obj_center, self.zoom)
             if tile_object.name == "zombie":
-                Mob(self, obj_center.x, obj_center.y, self.zoom)
+                Mob(self, obj_center, self.zoom)
             if tile_object.name == "wall":
                 Obstacle(
                     self,
-                    tile_object.x,
-                    tile_object.y,
+                    obj_center,
                     tile_object.width,
                     tile_object.height,
                     self.zoom,
@@ -220,7 +216,9 @@ class Game:
                 self.playing = False
         if hits:
             self.player.hit()
-            self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+            # TODO: rethink hit logic
+            # self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+
         # bullets hit mobs
         hits = pg.sprite.groupcollide(self.mobs, self.bullets, False, True)  # type: ignore (I'm not sure how to improve)
         for mob in hits:

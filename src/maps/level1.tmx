@@ -140,98 +140,108 @@
 </data>
  </layer>
  <objectgroup name="Obstacles">
-  <object id="1" name="player" x="336" y="208" width="32" height="32"/>
-  <object id="2" name="wall" x="448" y="320" width="320" height="64"/>
-  <object id="3" name="wall" x="448" y="960" width="960" height="64"/>
-  <object id="4" name="wall" x="960" y="640" width="384" height="64"/>
-  <object id="5" name="wall" x="1344" y="384" width="64" height="576"/>
-  <object id="6" name="wall" x="448" y="384" width="64" height="192"/>
-  <object id="7" name="wall" x="448" y="640" width="64" height="320"/>
-  <object id="8" name="wall" x="960" y="832" width="64" height="128"/>
-  <object id="9" name="wall" x="960" y="704" width="64" height="64"/>
-  <object id="15" name="wall" x="896" y="320" width="512" height="64"/>
-  <object id="21" name="wall" x="640" y="448" width="192" height="64"/>
-  <object id="22" name="wall" x="1168" y="768" width="176" height="128"/>
-  <object id="23" name="wall" x="1152" y="576" width="128" height="32"/>
-  <object id="24" name="wall" x="656" y="640" width="160" height="48"/>
-  <object id="25" name="wall" x="512" y="784" width="48" height="32"/>
-  <object id="26" name="wall" x="640" y="912" width="128" height="48"/>
-  <object id="28" name="wall" x="910" y="909" width="35" height="35"/>
-  <object id="29" name="wall" x="1088" y="608" width="64" height="32"/>
-  <object id="30" name="wall" x="1040" y="720" width="32" height="32"/>
-  <object id="31" name="wall" x="528" y="912" width="32" height="32"/>
-  <object id="34" name="wall" x="656" y="272" width="32" height="48"/>
-  <object id="35" name="wall" x="1024" y="912" width="48" height="48"/>
-  <object id="36" name="wall" x="1296" y="896" width="48" height="48"/>
-  <object id="37" name="wall" x="1296" y="704" width="48" height="48"/>
-  <object id="38" name="wall" x="1280" y="384" width="16" height="256"/>
-  <object id="40" name="zombie" x="784" y="208" width="32" height="32"/>
-  <object id="42" name="zombie" x="1072" y="816" width="32" height="32"/>
-  <object id="46" name="wall" x="784" y="1232" width="32" height="32"/>
-  <object id="47" name="wall" x="1104" y="1296" width="32" height="32"/>
-  <object id="48" name="wall" x="608" y="1504" width="64" height="64"/>
-  <object id="49" name="wall" x="352" y="1312" width="64" height="64"/>
-  <object id="50" name="wall" x="1312" y="96" width="64" height="64"/>
-  <object id="52" name="wall" x="1824" y="416" width="64" height="64"/>
-  <object id="53" name="wall" x="1744" y="336" width="32" height="32"/>
-  <object id="54" name="wall" x="1424" y="208" width="32" height="32"/>
-  <object id="55" name="wall" x="1680" y="-16" width="96" height="64"/>
-  <object id="56" name="wall" x="1568" y="544" width="64" height="64"/>
-  <object id="57" name="wall" x="400" y="784" width="32" height="32"/>
-  <object id="58" name="wall" x="400" y="656" width="32" height="32"/>
-  <object id="59" name="wall" x="400" y="528" width="32" height="32"/>
-  <object id="60" name="wall" x="400" y="400" width="32" height="32"/>
-  <object id="63" name="zombie" x="1184" y="464" width="32" height="32"/>
-  <object id="87" name="zombie" x="1616" y="720" width="32" height="32"/>
-  <object id="88" name="zombie" x="1712" y="704" width="32" height="32"/>
-  <object id="89" name="zombie" x="1744" y="608" width="32" height="32"/>
-  <object id="90" name="zombie" x="1728" y="832" width="32" height="32"/>
-  <object id="91" name="zombie" x="1584" y="848" width="32" height="32"/>
-  <object id="92" name="zombie" x="1504" y="736" width="32" height="32"/>
-  <object id="93" name="zombie" x="1856" y="752" width="32" height="32"/>
-  <object id="94" name="zombie" x="1872" y="576" width="32" height="32"/>
-  <object id="99" name="health" x="848" y="912" width="32" height="32"/>
-  <object id="100" name="shotgun" x="976" y="528" width="32" height="32"/>
-  <object id="132" name="health" x="3024" y="592" width="32" height="32"/>
-  <object id="133" name="zombie" x="2800" y="1168" width="32" height="32"/>
-  <object id="134" name="zombie" x="2704" y="1104" width="32" height="32"/>
-  <object id="135" name="zombie" x="2832" y="1104" width="32" height="32"/>
-  <object id="136" name="zombie" x="2960" y="1120" width="32" height="32"/>
-  <object id="137" name="zombie" x="3024" y="1040" width="32" height="32"/>
-  <object id="138" name="zombie" x="3040" y="1120" width="32" height="32"/>
-  <object id="139" name="zombie" x="2544" y="1200" width="32" height="32"/>
-  <object id="140" name="zombie" x="2480" y="1120" width="32" height="32"/>
-  <object id="141" name="zombie" x="2464" y="1264" width="32" height="32"/>
-  <object id="142" name="zombie" x="2416" y="1136" width="32" height="32"/>
-  <object id="143" name="zombie" x="3088" y="1248" width="32" height="32"/>
-  <object id="144" name="zombie" x="3040" y="736" width="32" height="32"/>
-  <object id="145" name="zombie" x="2752" y="688" width="32" height="32"/>
-  <object id="146" name="zombie" x="2464" y="736" width="32" height="32"/>
-  <object id="147" name="wall" x="2304" y="512" width="896" height="64"/>
-  <object id="149" name="wall" x="2304" y="1344" width="896" height="64"/>
-  <object id="150" name="wall" x="2368" y="960" width="192" height="64"/>
-  <object id="151" name="wall" x="2368" y="832" width="192" height="64"/>
-  <object id="152" name="wall" x="2752" y="960" width="256" height="64"/>
-  <object id="153" name="wall" x="2752" y="832" width="256" height="64"/>
-  <object id="154" name="wall" x="3072" y="832" width="64" height="192"/>
-  <object id="156" name="wall" x="2304" y="576" width="64" height="320"/>
-  <object id="157" name="wall" x="2304" y="960" width="64" height="384"/>
-  <object id="158" name="wall" x="2624" y="960" width="64" height="384"/>
-  <object id="159" name="wall" x="2880" y="1024" width="64" height="320"/>
-  <object id="160" name="wall" x="2624" y="576" width="64" height="320"/>
-  <object id="161" name="wall" x="3136" y="576" width="64" height="768"/>
-  <object id="162" name="wall" x="2896" y="640" width="32" height="128"/>
-  <object id="163" name="wall" x="2976" y="656" width="16" height="32"/>
-  <object id="164" name="wall" x="2976" y="720" width="16" height="32"/>
-  <object id="165" name="wall" x="2832" y="720" width="16" height="32"/>
-  <object id="166" name="wall" x="2832" y="656" width="16" height="32"/>
-  <object id="167" name="wall" x="2768" y="592" width="32" height="32"/>
-  <object id="177" name="wall" x="2384" y="592" width="32" height="32"/>
-  <object id="178" name="zombie" x="672" y="1376" width="32" height="32"/>
-  <object id="179" name="zombie" x="832" y="1392" width="32" height="32"/>
-  <object id="180" name="zombie" x="944" y="1344" width="32" height="32"/>
-  <object id="181" name="zombie" x="928" y="1472" width="32" height="32"/>
-  <object id="182" name="zombie" x="576" y="1424" width="32" height="32"/>
+  <object id="1" name="player" x="5" y="3" width="32" height="32"/>
+  <object id="2" name="wall" x="7" y="5" width="320" height="64"/>
+  <object id="3" name="wall" x="7" y="15" width="960" height="64"/>
+  <object id="4" name="wall" x="15" y="10" width="384" height="64"/>
+  <object id="5" name="wall" x="21" y="6" width="64" height="576"/>
+  <object id="6" name="wall" x="7" y="6" width="64" height="192"/>
+  <object id="7" name="wall" x="7" y="10" width="64" height="320"/>
+  <object id="8" name="wall" x="15" y="13" width="64" height="128"/>
+  <object id="9" name="wall" x="15" y="11" width="64" height="64" description='wall_tall'/>
+  <object id="15" name="wall" x="14" y="5" width="512" height="64"/>
+  <object id="21" name="wall" x="10" y="7" width="192" height="64"/>
+  <object id="22" name="wall" x="18" y="12" width="192" height="128" description='bed'/>
+
+  
+  <object id="24" name="wall" x="10" y="10" width="192" height="64" description='couch'/>
+  <object id="25" name="wall" x="8" y="12" width="48" height="32"/>
+  <object id="26" name="wall" x="10" y="14" width="128" height="48"/>
+  <object id="28" name="wall" x="14" y="14" width="35" height="35"/>
+  <object id="30" name="wall" x="16" y="11" width="32" height="32"/>
+  <object id="31" name="wall" x="8" y="14" width="32" height="32"/>
+  <object id="34" name="wall" x="10" y="4" width="64" height="64" description='chair'/>
+  <object id="35" name="wall" x="16" y="14" width="48" height="48"/>
+  <object id="36" name="wall" x="20" y="14" width="64" height="64" description='nightstand'/>
+  <object id="37" name="wall" x="20" y="11" width="64" height="64" description='nightstand'/>
+
+  <object id="29" name="wall" x="17" y="9" width="64" height="64" description='kitchen_fridge'/>
+  <object id="23" name="wall" x="18" y="9" width="64" height="64" description='kitchen_counter'/>
+  <object id="27" name="wall" x="19" y="9" width="64" height="64" description='kitchen_oven'/>
+  <object id="38" name="wall" x="20" y="6" width="64" height="64" description='kitchen_counter'/>
+  <object id="39" name="wall" x="20" y="7" width="64" height="64" description='kitchen_counter'/>
+  <object id="41" name="wall" x="20" y="8" width="64" height="64" description='kitchen_counter'/>
+  <object id="44" name="wall" x="20" y="9" width="64" height="64" description='kitchen_counter'/>
+  
+
+  <object id="40" name="zombie" x="12" y="3" width="32" height="32"/>
+  <object id="42" name="zombie" x="16" y="12" width="32" height="32"/>
+  <object id="46" name="wall" x="12" y="19" width="64" height="64" description='bush_small'/>
+  <object id="47" name="wall" x="17" y="20" width="64" height="64" description='bush_small'/>
+  <object id="43" name="wall" x="26" y="-1" width="128" height="128" description='bush_large'/>
+  <object id="48" name="wall" x="9" y="23" width="128" height="128" description='bush_large'/>
+  <object id="49" name="wall" x="5" y="20" width="128" height="128" description='bush_large'/>
+  <object id="50" name="wall" x="20" y="1" width="128" height="128" description='bush_large'/>
+  <object id="52" name="wall" x="28" y="6" width="128" height="128" description='bush_large'/>
+  <object id="53" name="wall" x="27" y="5"  width="64" height="64" description='bush_small'/>
+  <object id="54" name="wall" x="22" y="3"  width="64" height="64" description='bush_small'/>
+  <object id="55" name="wall" x="26" y="-1" width="96" height="64"/>
+  <object id="56" name="wall" x="24" y="8" width="128" height="128" description='bush_large'/>
+  <object id="57" name="wall" x="6" y="12" width="64" height="64" description='bush_small'/>
+  <object id="58" name="wall" x="6" y="10" width="64" height="64" description='bush_small'/>
+  <object id="59" name="wall" x="6" y="8" width="64" height="64" description='bush_small'/>
+  <object id="60" name="wall" x="6" y="6" width="64" height="64" description='bush_small'/>
+  <object id="63" name="zombie" x="18" y="7" width="32" height="32"/>
+  <object id="87" name="zombie" x="25" y="11" width="32" height="32"/>
+  <object id="88" name="zombie" x="26" y="11" width="32" height="32"/>
+  <object id="89" name="zombie" x="27" y="9" width="32" height="32"/>
+  <object id="90" name="zombie" x="27" y="13" width="32" height="32"/>
+  <object id="91" name="zombie" x="24" y="13" width="32" height="32"/>
+  <object id="92" name="zombie" x="23" y="11" width="32" height="32"/>
+  <object id="93" name="zombie" x="29" y="11" width="32" height="32"/>
+  <object id="94" name="zombie" x="29" y="9" width="32" height="32"/>
+  <object id="99" name="health" x="13" y="14" width="32" height="32"/>
+  <object id="100" name="shotgun" x="15" y="8" width="32" height="32"/>
+  <object id="132" name="health" x="47" y="9" width="32" height="32"/>
+  <object id="133" name="zombie" x="43" y="18" width="32" height="32"/>
+  <object id="134" name="zombie" x="42" y="17" width="32" height="32"/>
+  <object id="135" name="zombie" x="44" y="17" width="32" height="32"/>
+  <object id="136" name="zombie" x="46" y="17" width="32" height="32"/>
+  <object id="137" name="zombie" x="47" y="16" width="32" height="32"/>
+  <object id="138" name="zombie" x="47" y="17" width="32" height="32"/>
+  <object id="139" name="zombie" x="39" y="18" width="32" height="32"/>
+  <object id="140" name="zombie" x="38" y="17" width="32" height="32"/>
+  <object id="141" name="zombie" x="38" y="19" width="32" height="32"/>
+  <object id="142" name="zombie" x="37" y="17" width="32" height="32"/>
+  <object id="143" name="zombie" x="48" y="19" width="32" height="32"/>
+  <object id="144" name="zombie" x="47" y="11" width="32" height="32"/>
+  <object id="145" name="zombie" x="43" y="10" width="32" height="32"/>
+  <object id="146" name="zombie" x="38" y="11" width="32" height="32"/>
+  <object id="147" name="wall" x="36" y="8" width="896" height="64"/>
+  <object id="149" name="wall" x="36" y="21" width="896" height="64"/>
+  <object id="150" name="wall" x="37" y="15" width="192" height="64"/>
+  <object id="151" name="wall" x="37" y="13" width="192" height="64"/>
+  <object id="152" name="wall" x="43" y="15" width="256" height="64"/>
+  <object id="153" name="wall" x="43" y="13" width="256" height="64"/>
+  <object id="154" name="wall" x="48" y="13" width="64" height="192"/>
+  <object id="156" name="wall" x="36" y="9" width="64" height="320"/>
+  <object id="157" name="wall" x="36" y="15" width="64" height="384"/>
+  <object id="158" name="wall" x="41" y="15" width="64" height="384"/>
+  <object id="159" name="wall" x="45" y="16" width="64" height="320"/>
+  <object id="160" name="wall" x="41" y="9" width="64" height="320"/>
+  <object id="161" name="wall" x="49" y="9" width="64" height="768"/>
+  <object id="162" name="wall" x="45" y="10" width="32" height="128"/>
+  <object id="163" name="wall" x="46" y="10" width="16" height="32"/>
+  <object id="164" name="wall" x="46" y="11" width="16" height="32"/>
+  <object id="165" name="wall" x="44" y="11" width="16" height="32"/>
+  <object id="166" name="wall" x="44" y="10" width="16" height="32"/>
+  <object id="167" name="wall" x="43" y="9" width="32" height="32"/>
+  <object id="177" name="wall" x="37" y="9" width="32" height="32"/>
+  <object id="178" name="zombie" x="10" y="21" width="32" height="32"/>
+  <object id="179" name="zombie" x="13" y="21" width="32" height="32"/>
+  <object id="180" name="zombie" x="14" y="21" width="32" height="32"/>
+  <object id="181" name="zombie" x="14" y="23" width="32" height="32"/>
+  <object id="182" name="zombie" x="9" y="22" width="32" height="32"/>
  </objectgroup>
  <objectgroup name="Breakables">
   <object id="114" name="breakable" gid="526" x="832" y="384" width="64" height="64">
